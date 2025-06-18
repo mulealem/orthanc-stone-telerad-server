@@ -1,15 +1,46 @@
-version: '3.1'  # Secrets are only available since this version of Docker Compose
+version: '3.1'
 services:
   orthanc:
     image: jodogne/orthanc-plugins:1.12.7
+    depends_on:
+      - postgres
     command: /run/secrets/  # Path to the configuration files (stored as secrets)
     ports:
-      - 4242:4242
-      - 8042:8042
+      - 4242:4242  # DICOM port
+      - 8042:8042  # HTTP port for web interface
     secrets:
       - orthanc.json
     environment:
       - ORTHANC_NAME=Demo
+      - STONE_WEB_VIEWER_PLUGIN_ENABLED=true  # Enable Stone Web Viewer
+      - DICOM_WEB_PLUGIN_ENABLED=true        # Enable DICOMweb plugin
+      - ORTHANC__DICOM_WEB__SERIES_METADATA=Full
+      - ORTHANC__DICOM_WEB__STUDIES_METADATA=Full
+      - ORTHANC__POSTGRESQL__ENABLE_INDEX=true  # Enable PostgreSQL index
+      - ORTHANC__POSTGRESQL__ENABLE_STORAGE=false  # Store DICOM files on filesystem
+      - ORTHANC__POSTGRESQL__HOST=postgres
+      - ORTHANC__POSTGRESQL__PORT=5439
+      - ORTHANC__POSTGRESQL__DATABASE=orthanc
+      - ORTHANC__POSTGRESQL__USERNAME=orthanc
+      - ORTHANC__POSTGRESQL__PASSWORD=orthanc_password
+    volumes:
+      - orthanc-storage:/var/lib/orthanc/db  # Persistent storage for DICOM files
+      - ./custom.lua:/etc/orthanc/custom.lua  # Mount the Lua script
+      # - ./trigger_webhook.py:/etc/orthanc/trigger_webhook.py  # Mount the Python script
+  postgres:
+    image: postgres:16
+    ports:
+      - 5439:5439
+    environment:
+      - POSTGRES_USER=orthanc
+      - POSTGRES_PASSWORD=orthanc_password
+      - POSTGRES_DB=orthanc
+    volumes:
+      - postgres-data:/var/lib/postgresql/data  # Persistent storage for PostgreSQL
+    command: -c port=5439
 secrets:
   orthanc.json:
     file: orthanc.json
+volumes:
+  orthanc-storage:  # Named volume for Orthanc DICOM files
+  postgres-data:    # Named volume for PostgreSQL data

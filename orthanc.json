@@ -1,8 +1,54 @@
 {
-  "Name" : "${ORTHANC_NAME} in Docker Compose",
-  "RemoteAccessAllowed" : true,
-  "AuthenticationEnabled" : true,
-  "RegisteredUsers" : {
-    "admin" : "qazwsx123"
+  "Name": "Demo",
+  "Plugins": [
+    "/usr/share/orthanc/plugins",
+    "/usr/local/share/orthanc/plugins"
+  ],
+  "StorageDirectory": "/var/lib/orthanc/db",
+  "RemoteAccessAllowed": true,
+  "HttpHeaders": {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type, Accept"
+  },
+  "AuthenticationEnabled": false,
+  "RegisteredUsers": {
+    "demo": "demo"
+  },
+  "PostgreSQL": {
+    "EnableIndex": true,
+    "EnableStorage": false,
+    "Host": "postgres",
+    "Port": 5439,
+    "Database": "orthanc",
+    "Username": "orthanc",
+    "Password": "orthanc_password"
+  },
+  "DicomWeb": {
+    "Enable": true,
+    "SeriesMetadata": "Full",
+    "StudiesMetadata": "Full"
+  },
+  "StoneWebViewer": {
+    "Enable": true,
+    "DateFormat": "DD/MM/YYYY"
+  },
+  "LuaScripts": [
+    "/etc/orthanc/custom.lua"
+  ],
+  "Webhooks": {
+    "Enable": true,
+    "Events": {
+      "StableResource": [
+        {
+          "Url": "https://webhook-service-iota.vercel.app/webhook",
+          "Method": "POST",
+          "Headers": {
+            "Content-Type": "application/json"
+          },
+          "Body": "{\"event\": \"image_uploaded\", \"resource_id\": \"${ResourceId}\", \"study_id\": \"${StudyInstanceUID}\"}"
+        }
+      ]
     }
+  }
 }
