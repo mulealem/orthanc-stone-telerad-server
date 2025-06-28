@@ -28,16 +28,16 @@ function OnStoredInstance(instanceId, tags, metadata, origin)
     -- PrintRecursive('Payload to send: ', jsonPayload)
 
     -- -- Send HTTP POST to webhook
-    local webhookUrl = "https://webhook-service-iota.vercel.app/webhook"
+    -- local webhookUrl = "https://webhook-service-iota.vercel.app/webhook"
+    local webhookUrl = "http://75.119.148.56:3019/echo"
     print('Sending webhook to: ' .. webhookUrl)
     -- local response = HttpPost(webhookUrl, jsonPayload, {
     --     headers = { ["Content-Type"] = "application/json" },
     --     timeout = 10, -- Ensure timeout is a number
     --     verifyCertificate = false
     -- })
-    local response = HttpPost("https://webhook-service-iota.vercel.app/webhook", jsonPayload, {
+    local response = HttpPost(webhookUrl, jsonPayload, {
         ["Content-Type"] = "application/json",
-        ["IgnoreSslErrors"] = true
     })
 
     -- Log the response
