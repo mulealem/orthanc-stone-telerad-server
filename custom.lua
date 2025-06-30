@@ -29,8 +29,7 @@ function OnStoredInstance(instanceId, tags, metadata, origin)
 
     -- -- Send HTTP POST to webhook
     -- local webhookUrl = "https://webhook-service-iota.vercel.app/webhook"
-    -- local webhookUrl = "http://75.119.148.56:3019/echo"
-    local webhookUrl = "https://express-echo.zacri.tech/echo"
+    local webhookUrl = "http://75.119.148.56:3018/echo"
     print('Sending webhook to: ' .. webhookUrl)
     -- local response = HttpPost(webhookUrl, jsonPayload, {
     --     headers = { ["Content-Type"] = "application/json" },
